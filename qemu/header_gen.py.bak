@@ -4066,37 +4066,22 @@ if __name__ == '__main__':
 
   for s in symbols:
       print("#define %s %s_%s" %(s, s, arch))
-      if s.startswith("helper_"):
-          s = "adapter_" + s
-          print("#define %s %s_%s" %(s, s, arch))
 
   if 'arm' in arch:
     for s in arm_symbols:
       print("#define %s %s_%s" %(s, s, arch))
-      if s.startswith("helper_"):
-          s = "adapter_" + s
-          print("#define %s %s_%s" %(s, s, arch))
 
   if 'aarch64' in arch:
     for s in aarch64_symbols:
       print("#define %s %s_%s" %(s, s, arch))
-      if s.startswith("helper_"):
-          s = "adapter_" + s
-          print("#define %s %s_%s" %(s, s, arch))
 
   if 'mips' in arch:
     for s in mips_symbols:
       print("#define %s %s_%s" %(s, s, arch))
-      if s.startswith("helper_"):
-          s = "adapter_" + s
-          print("#define %s %s_%s" %(s, s, arch))
 
   if 'sparc' in arch:
     for s in sparc_symbols:
       print("#define %s %s_%s" %(s, s, arch))
-      if s.startswith("helper_"):
-          s = "adapter_" + s
-          print("#define %s %s_%s" %(s, s, arch))
 
   print("#endif")
 

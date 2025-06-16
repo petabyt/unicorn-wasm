@@ -8,7 +8,7 @@
 # Compile with debug info when you want to debug code.
 # Change this to 'no' for release edition.
 
-UNICORN_DEBUG ?= no
+UNICORN_DEBUG ?= yes
 
 ################################################################################
 # Specify which archs you want to compile in. By default, we build all archs.
@@ -27,4 +27,4 @@ UNICORN_STATIC ?= yes
 # Change 'UNICORN_SHARED = yes' to 'UNICORN_SHARED = no' to avoid building
 # a shared library.
 
-UNICORN_SHARED ?= no
+UNICORN_SHARED ?= yes

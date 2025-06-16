@@ -578,7 +578,7 @@ uc_err uc_emu_stop(uc_engine *uc);
 */
 UNICORN_EXPORT
 uc_err uc_hook_add(uc_engine *uc, uc_hook *hh, int type, void *callback,
-        void *user_data, uint64_t begin, uint64_t end, uint32_t extra);
+        void *user_data, uint64_t begin, uint64_t end, ...);
 
 /*
  Unregister (remove) a hook callback.

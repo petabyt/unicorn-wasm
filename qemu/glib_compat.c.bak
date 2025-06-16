@@ -202,7 +202,7 @@ static GList *g_list_sort_merge(GList *l1,
 
   while (l1 && l2)
     {
-      cmp = ((GCompareFunc) compare_func) (l1->data, l2->data);
+      cmp = ((GCompareDataFunc) compare_func) (l1->data, l2->data, user_data);
 
       if (cmp <= 0)
         {
@@ -339,7 +339,7 @@ static GSList *g_slist_sort_merge (GSList *l1,
 
   while (l1 && l2)
     {
-      cmp = ((GCompareFunc) compare_func) (l1->data, l2->data);
+      cmp = ((GCompareDataFunc) compare_func) (l1->data, l2->data, user_data);
 
       if (cmp <= 0)
         {

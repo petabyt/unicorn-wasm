@@ -159,7 +159,6 @@ unset target_list
 debug_tcg="no"
 debug="no"
 strip_opt="yes"
-tcg_interpreter="yes"
 bigendian="no"
 mingw32="no"
 EXESUF=""
@@ -1132,9 +1131,6 @@ if test "$bswap_h" = "yes" ; then
   echo "CONFIG_MACHINE_BSWAP_H=y" >> $config_host_mak
 fi
 
-if test "$tcg_interpreter" = "yes" ; then
-  echo "CONFIG_TCG_INTERPRETER=y" >> $config_host_mak
-fi
 # XXX: suppress that
 if [ "$bsd" = "yes" ] ; then
   echo "CONFIG_BSD=y" >> $config_host_mak
@@ -1152,9 +1148,7 @@ if test "$int128" = "yes" ; then
   echo "CONFIG_INT128=y" >> $config_host_mak
 fi
 
-if test "$tcg_interpreter" = "yes"; then
-  QEMU_INCLUDES="-I\$(SRC_PATH)/tcg/tci $QEMU_INCLUDES"
-elif test "$ARCH" = "sparc64" ; then
+if test "$ARCH" = "sparc64" ; then
   QEMU_INCLUDES="-I\$(SRC_PATH)/tcg/sparc $QEMU_INCLUDES"
 elif test "$ARCH" = "s390x" ; then
   QEMU_INCLUDES="-I\$(SRC_PATH)/tcg/s390 $QEMU_INCLUDES"

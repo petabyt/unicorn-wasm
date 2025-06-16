@@ -1,6 +1,8 @@
 /* Autogen header for Unicorn Engine - DONOT MODIFY */
 #ifndef UNICORN_AUTOGEN_AARCH64EB_H
 #define UNICORN_AUTOGEN_AARCH64EB_H
+#define tci_tb_ptr tci_tb_ptr_aarch64eb
+#define tcg_qemu_tb_exec tcg_qemu_tb_exec_aarch64eb
 #define arm_release arm_release_aarch64eb
 #define aarch64_tb_set_jmp_target aarch64_tb_set_jmp_target_aarch64eb
 #define ppc_tb_set_jmp_target ppc_tb_set_jmp_target_aarch64eb

@@ -699,19 +699,7 @@ void tcg_gen_callN(TCGContext *s, void *func, TCGArg ret,
 
     info = g_hash_table_lookup(s->helpers, (gpointer)func);
     flags = info->flags;
-    
-         sizemask = info->sizemask;
-
-         for (i = 0; i < nargs; i++) {
-             int is_64bit = sizemask & (1 << (i+1)*2);
-             if (!is_64bit) {
-                 TCGv_i64 ext_arg = tcg_temp_new_i64(s);
-                 TCGv_i64 orig = MAKE_TCGV_I64(args[i]);
-                 tcg_gen_ext32u_i64(s, ext_arg, orig);
-                 args[i] = GET_TCGV_I64(ext_arg);
-             }
-         }
-        
+    sizemask = info->sizemask;
 
 #if defined(__sparc__) && !defined(__arch64__) \
     && !defined(CONFIG_TCG_INTERPRETER)
@@ -726,7 +714,7 @@ void tcg_gen_callN(TCGContext *s, void *func, TCGArg ret,
     if (sizemask != 0) {
         TCGArg *split_args = __builtin_alloca(sizeof(TCGArg) * nargs * 2);
         for (i = real_args = 0; i < nargs; ++i) {
-            int is_64bit = 1;//sizemask & (1 << (i+1)*2);
+            int is_64bit = sizemask & (1 << (i+1)*2);
             if (is_64bit) {
                 TCGv_i64 orig = MAKE_TCGV_I64(args[i]);
                 TCGv_i32 h = tcg_temp_new_i32(s);
@@ -744,7 +732,7 @@ void tcg_gen_callN(TCGContext *s, void *func, TCGArg ret,
     }
 #elif defined(TCG_TARGET_EXTEND_ARGS) && TCG_TARGET_REG_BITS == 64
     for (i = 0; i < nargs; ++i) {
-        int is_64bit = 1;//sizemask & (1 << (i+1)*2);
+        int is_64bit = sizemask & (1 << (i+1)*2);
         int is_signed = sizemask & (2 << (i+1)*2);
         if (!is_64bit) {
             TCGv_i64 temp = tcg_temp_new_i64(s);
@@ -797,7 +785,7 @@ void tcg_gen_callN(TCGContext *s, void *func, TCGArg ret,
     }
     real_args = 0;
     for (i = 0; i < nargs; i++) {
-        int is_64bit = 1;//sizemask & (1 << (i+1)*2);
+        int is_64bit = sizemask & (1 << (i+1)*2);
         if (TCG_TARGET_REG_BITS < 64 && is_64bit) {
 #ifdef TCG_TARGET_CALL_ALIGN_ARGS
             /* some targets want aligned 64 bit args */
@@ -842,7 +830,7 @@ void tcg_gen_callN(TCGContext *s, void *func, TCGArg ret,
     && !defined(CONFIG_TCG_INTERPRETER)
     /* Free all of the parts we allocated above.  */
     for (i = real_args = 0; i < orig_nargs; ++i) {
-        int is_64bit = 1;//orig_sizemask & (1 << (i+1)*2);
+        int is_64bit = orig_sizemask & (1 << (i+1)*2);
         if (is_64bit) {
             TCGv_i32 h = MAKE_TCGV_I32(args[real_args++]);
             TCGv_i32 l = MAKE_TCGV_I32(args[real_args++]);
@@ -862,7 +850,7 @@ void tcg_gen_callN(TCGContext *s, void *func, TCGArg ret,
     }
 #elif defined(TCG_TARGET_EXTEND_ARGS) && TCG_TARGET_REG_BITS == 64
     for (i = 0; i < nargs; ++i) {
-        int is_64bit = 1;//sizemask & (1 << (i+1)*2);
+        int is_64bit = sizemask & (1 << (i+1)*2);
         if (!is_64bit) {
             TCGv_i64 temp = MAKE_TCGV_I64(args[i]);
             tcg_temp_free_i64(s, temp);

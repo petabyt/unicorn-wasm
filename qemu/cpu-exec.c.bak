@@ -33,7 +33,7 @@ static void cpu_handle_debug_exception(CPUArchState *env);
 void cpu_loop_exit(CPUState *cpu)
 {
     cpu->current_tb = NULL;
-    longjmp(cpu->jmp_env, 1);
+    siglongjmp(cpu->jmp_env, 1);
 }
 
 /* exit the current TB from a signal handler. The host registers are
@@ -43,7 +43,7 @@ void cpu_resume_from_signal(CPUState *cpu, void *puc)
 {
     /* XXX: restore cpu registers saved in host registers */
     cpu->exception_index = -1;
-    longjmp(cpu->jmp_env, 1);
+    siglongjmp(cpu->jmp_env, 1);
 }
 
 /* main execution loop */
@@ -90,7 +90,7 @@ int cpu_exec(struct uc_struct *uc, CPUArchState *env)   // qq
 
     /* prepare setjmp context for exception handling */
     for(;;) {
-        if (setjmp(cpu->jmp_env) == 0) {
+        if (sigsetjmp(cpu->jmp_env, 0) == 0) {
             if (uc->stop_request || uc->invalid_error) {
                 break;
             }
