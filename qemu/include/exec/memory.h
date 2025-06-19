@@ -20,6 +20,7 @@
 #define DIRTY_MEMORY_NUM       1        /* num of dirty bits */
 
 #include "unicorn/platform.h"
+#include "unicorn/unicorn.h"
 #include "qemu-common.h"
 #include "exec/cpu-common.h"
 #include "exec/hwaddr.h"
@@ -35,9 +36,8 @@
 #define MEMORY_REGION(uc, obj) \
         OBJECT_CHECK(uc, MemoryRegion, (obj), TYPE_MEMORY_REGION)
 
-typedef uint64_t (*uc_cb_mmio_read)(struct uc_struct* uc, void *opaque, uint64_t addr, unsigned size);
-
-typedef void (*uc_cb_mmio_write)(struct uc_struct* uc, void *opaque, uint64_t addr, uint64_t data, unsigned size);
+//typedef uint64_t (*uc_cb_mmio_read)(uc_engine *uc, uint64_t offset, unsigned size, void *user_data);
+//typedef void (*uc_cb_mmio_write)(uc_engine *uc, uint64_t offset, unsigned size, uint64_t value, void *user_data);
 
 typedef struct MemoryRegionOps MemoryRegionOps;
 typedef struct MemoryRegionMmio MemoryRegionMmio;
@@ -71,15 +71,10 @@ struct IOMMUTLBEntry {
 struct MemoryRegionOps {
     /* Read from the memory region. @addr is relative to @mr; @size is
      * in bytes. */
-    uint64_t (*read)(struct uc_struct* uc, void *opaque,
-                     hwaddr addr,
-                     unsigned size);
+    uint64_t (*read)(struct uc_struct* uc, uint64_t offset, unsigned size, void *user_data);
     /* Write to the memory region. @addr is relative to @mr; @size is
      * in bytes. */
-    void (*write)(struct uc_struct* uc, void *opaque,
-                  hwaddr addr,
-                  uint64_t data,
-                  unsigned size);
+    void (*write)(struct uc_struct* uc, uint64_t offset, unsigned size, uint64_t value, void *user_data);
 
     enum device_endian endianness;
     /* Guest-visible constraints: */

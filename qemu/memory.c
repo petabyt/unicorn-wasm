@@ -453,7 +453,7 @@ static void memory_region_read_accessor(MemoryRegion *mr,
 {
     uint64_t tmp;
 
-    tmp = mr->ops->read(mr->uc, mr->opaque, addr, size);
+    tmp = mr->ops->read(mr->uc, addr, size, mr->opaque);
     *value |= (tmp & mask) << shift;
 }
 
@@ -480,7 +480,7 @@ static void memory_region_write_accessor(MemoryRegion *mr,
     uint64_t tmp;
 
     tmp = (*value >> shift) & mask;
-    mr->ops->write(mr->uc, mr->opaque, addr, tmp, size);
+    mr->ops->write(mr->uc, addr, size, tmp, mr->opaque);
 }
 
 static void access_with_adjusted_size(hwaddr addr,

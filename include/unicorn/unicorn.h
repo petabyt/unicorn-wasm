@@ -214,9 +214,8 @@ typedef uint32_t (*uc_cb_insn_in_t)(uc_engine *uc, uint32_t port, int size, void
 */
 typedef void (*uc_cb_insn_out_t)(uc_engine *uc, uint32_t port, int size, uint32_t value, void *user_data);
 
-typedef uint64_t (*uc_cb_mmio_read)(struct uc_struct* uc, void *opaque, uint64_t addr, unsigned size);
-
-typedef void (*uc_cb_mmio_write)(struct uc_struct* uc, void *opaque, uint64_t addr, uint64_t data, unsigned size);
+typedef uint64_t (*uc_cb_mmio_read)(uc_engine *uc, uint64_t offset, unsigned size, void *user_data);
+typedef void (*uc_cb_mmio_write)(uc_engine *uc, uint64_t offset, unsigned size, uint64_t value, void *user_data);
 
 // All type of memory accesses for UC_HOOK_MEM_*
 typedef enum uc_mem_type {
@@ -718,7 +717,7 @@ uc_err uc_mem_regions(uc_engine *uc, uc_mem_region **regions, uint32_t *count);
    for detailed error).
 */
 UNICORN_EXPORT
-uc_err uc_mmio_map(uc_engine *uc, uint64_t address, size_t size, uc_cb_mmio_read read_cb, uc_cb_mmio_write write_cb, void *user_data);
+uc_err uc_mmio_map(uc_engine *uc, uint64_t address, size_t size, uc_cb_mmio_read read_cb, void *user_data_read, uc_cb_mmio_write write_cb, void *user_data_write);
 
 /*
  Allocate a region that can be used with uc_context_{save,restore} to perform

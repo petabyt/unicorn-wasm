@@ -793,7 +793,7 @@ uc_err uc_mem_map(uc_engine *uc, uint64_t address, size_t size, uint32_t perms)
 }
 
 UNICORN_EXPORT
-uc_err uc_mmio_map(uc_engine *uc, uint64_t address, size_t size, uc_cb_mmio_read read_cb, uc_cb_mmio_write write_cb, void *user_data)
+uc_err uc_mmio_map(uc_engine *uc, uint64_t address, size_t size, uc_cb_mmio_read read_cb, void *user_data_read, uc_cb_mmio_write write_cb, void *user_data_write)
 {
     uc_err res;
     struct mmio_data *data;
@@ -808,7 +808,7 @@ uc_err uc_mmio_map(uc_engine *uc, uint64_t address, size_t size, uc_cb_mmio_read
 
     // The callbacks do not need to be checked for NULL here, as their presence
     // (or lack thereof) will determine the permissions used.
-    return mem_map(uc, address, size, UC_PROT_NONE, uc->memory_map_io(uc, address, size, read_cb, write_cb, user_data));
+    return mem_map(uc, address, size, UC_PROT_NONE, uc->memory_map_io(uc, address, size, read_cb, write_cb, user_data_write));
 }
 
 UNICORN_EXPORT

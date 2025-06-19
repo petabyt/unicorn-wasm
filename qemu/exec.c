@@ -1248,8 +1248,7 @@ found:
     return block->mr;
 }
 
-static uint64_t subpage_read(struct uc_struct* uc, void *opaque, hwaddr addr,
-        unsigned len)
+static uint64_t subpage_read(struct uc_struct* uc, uint64_t addr, unsigned len, void *opaque)
 {
     subpage_t *subpage = opaque;
     uint8_t buf[4];
@@ -1271,8 +1270,7 @@ static uint64_t subpage_read(struct uc_struct* uc, void *opaque, hwaddr addr,
     }
 }
 
-static void subpage_write(struct uc_struct* uc, void *opaque, hwaddr addr,
-        uint64_t value, unsigned len)
+static void subpage_write(struct uc_struct* uc, uint64_t addr, unsigned len, uint64_t value, void *opaque)
 {
     subpage_t *subpage = opaque;
     uint8_t buf[4];
@@ -1340,8 +1338,7 @@ static int subpage_register (subpage_t *mmio, uint32_t start, uint32_t end,
     return 0;
 }
 
-static void notdirty_mem_write(struct uc_struct* uc, void *opaque, hwaddr ram_addr,
-                               uint64_t val, unsigned size)
+static void notdirty_mem_write(struct uc_struct* uc, uint64_t ram_addr, unsigned size, uint64_t val, void *opaque)
 {
     if (!cpu_physical_memory_get_dirty_flag(uc, ram_addr, DIRTY_MEMORY_CODE)) {
         tb_invalidate_phys_page_fast(uc, ram_addr, size);

@@ -47,13 +47,12 @@ typedef struct MemoryRegionPortioList {
     MemoryRegionPortio ports[];
 } MemoryRegionPortioList;
 
-static uint64_t unassigned_io_read(struct uc_struct* uc, void *opaque, hwaddr addr, unsigned size)
+static uint64_t unassigned_io_read(struct uc_struct* uc, uint64_t offset, unsigned size, void *user_data)
 {
     return 0-1ULL;
 }
 
-static void unassigned_io_write(struct uc_struct* uc, void *opaque, hwaddr addr, uint64_t val,
-                                unsigned size)
+static void unassigned_io_write(struct uc_struct* uc, uint64_t offset, unsigned size, uint64_t value, void *user_data)
 {
 }
 
