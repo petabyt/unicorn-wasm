@@ -189,13 +189,15 @@ else()
         set (TARGET_LIST "${TARGET_LIST}sparc-softmmu, sparc64-softmmu, ")
     endif()
     set (TARGET_LIST "${TARGET_LIST} ")
-
+    if(EMSCRIPTEN)
+        set(EXTRA_EXTRA_CFLAGS --disable-stack-protector --cpu=i386)
+    endif()
     # GEN config-host.mak & target directories
     execute_process(COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/qemu/configure
         --cc=${CMAKE_C_COMPILER}
         ${EXTRA_CFLAGS}
         ${TARGET_LIST}
-        --disable-stack-protector --cpu=i386
+        ${EXTRA_EXTRA_CFLAGS}
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
     execute_process(COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/qemu/scripts/create_config

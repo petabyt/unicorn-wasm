@@ -214,6 +214,10 @@ typedef uint32_t (*uc_cb_insn_in_t)(uc_engine *uc, uint32_t port, int size, void
 */
 typedef void (*uc_cb_insn_out_t)(uc_engine *uc, uint32_t port, int size, uint32_t value, void *user_data);
 
+typedef uint64_t (*uc_cb_mmio_read)(struct uc_struct* uc, void *opaque, uint64_t addr, unsigned size);
+
+typedef void (*uc_cb_mmio_write)(struct uc_struct* uc, void *opaque, uint64_t addr, uint64_t data, unsigned size);
+
 // All type of memory accesses for UC_HOOK_MEM_*
 typedef enum uc_mem_type {
     UC_MEM_READ = 16,   // Memory is read from
@@ -695,6 +699,26 @@ uc_err uc_mem_protect(uc_engine *uc, uint64_t address, size_t size, uint32_t per
 */
 UNICORN_EXPORT
 uc_err uc_mem_regions(uc_engine *uc, uc_mem_region **regions, uint32_t *count);
+
+/*
+ Map MMIO in for emulation.
+ This API adds a MMIO region that can be used by emulation.
+
+ @uc: handle returned by uc_open()
+ @address: starting address of the new MMIO region to be mapped in.
+    This address must be aligned to 4KB, or this will return with UC_ERR_ARG error.
+ @size: size of the new MMIO region to be mapped in.
+    This size must be multiple of 4KB, or this will return with UC_ERR_ARG error.
+ @read_cb: function for handling reads from this MMIO region.
+ @write_cb: function for handling writes to this MMIO region.
+ @user_data: user-defined data. This will be passed to callback function in its
+      last argument @user_data
+
+ @return UC_ERR_OK on success, or other value on failure (refer to uc_err enum
+   for detailed error).
+*/
+UNICORN_EXPORT
+uc_err uc_mmio_map(uc_engine *uc, uint64_t address, size_t size, uc_cb_mmio_read read_cb, uc_cb_mmio_write write_cb, void *user_data);
 
 /*
  Allocate a region that can be used with uc_context_{save,restore} to perform
