@@ -215,7 +215,9 @@ uc_err uc_open(uc_arch arch, uc_mode mode, uc_engine **result)
                     return UC_ERR_MODE;
                 }
                 if (mode & UC_MODE_BIG_ENDIAN) {
+#ifdef UNICORN_HAS_ARM64EB
                     uc->init_arch = arm64eb_uc_init;
+#endif
                 } else {
                     uc->init_arch = arm64_uc_init;
                 }
