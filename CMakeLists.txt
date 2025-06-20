@@ -153,7 +153,7 @@ else()
         set (EXTRA_CFLAGS "${EXTRA_CFLAGS}-DUNICORN_HAS_X86 ")
     endif()
     if (UNICORN_HAS_ARM)
-        set (EXTRA_CFLAGS "${EXTRA_CFLAGS}-DUNICORN_HAS_ARM -DUNICORN_HAS_ARMEB ")
+        set (EXTRA_CFLAGS "${EXTRA_CFLAGS}-DUNICORN_HAS_ARM ")
     endif()
     if (UNICORN_HAS_AARCH64)
         set (EXTRA_CFLAGS "${EXTRA_CFLAGS}-DUNICORN_HAS_ARM64 ")
@@ -174,7 +174,7 @@ else()
         set (TARGET_LIST "${TARGET_LIST}x86_64-softmmu, ")
     endif()
     if (UNICORN_HAS_ARM)
-        set (TARGET_LIST "${TARGET_LIST}arm-softmmu, armeb-softmmu, ")
+        set (TARGET_LIST "${TARGET_LIST}arm-softmmu, ")
     endif()
     if (UNICORN_HAS_AARCH64)
         set (TARGET_LIST "${TARGET_LIST}aarch64-softmmu, ")
@@ -215,10 +215,10 @@ else()
             INPUT_FILE ${CMAKE_BINARY_DIR}/arm-softmmu/config-target.mak
             OUTPUT_FILE ${CMAKE_BINARY_DIR}/arm-softmmu/config-target.h
         )
-        execute_process(COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/qemu/scripts/create_config
-            INPUT_FILE ${CMAKE_BINARY_DIR}/armeb-softmmu/config-target.mak
-            OUTPUT_FILE ${CMAKE_BINARY_DIR}/armeb-softmmu/config-target.h
-        )
+#        execute_process(COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/qemu/scripts/create_config
+#            INPUT_FILE ${CMAKE_BINARY_DIR}/armeb-softmmu/config-target.mak
+#            OUTPUT_FILE ${CMAKE_BINARY_DIR}/armeb-softmmu/config-target.h
+#        )
     endif()
     if (UNICORN_HAS_AARCH64)
         execute_process(COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/qemu/scripts/create_config
@@ -304,6 +304,7 @@ add_library(x86_64-softmmu OBJECT
     qemu/target-i386/unicorn.c
     qemu/tcg/optimize.c
     qemu/tcg/tcg.c
+    qemu/tci.c
     qemu/translate-all.c
 )
 
@@ -347,6 +348,7 @@ add_library(arm-softmmu OBJECT
     qemu/target-arm/unicorn_arm.c
     qemu/tcg/optimize.c
     qemu/tcg/tcg.c
+    qemu/tci.c
     qemu/translate-all.c
 )
 
@@ -366,46 +368,46 @@ else()
     )
 endif()
 
-add_library(armeb-softmmu OBJECT
-    qemu/cpu-exec.c
-    qemu/cpus.c
-    qemu/cputlb.c
-    qemu/exec.c
-    qemu/fpu/softfloat.c
-    qemu/hw/arm/tosa.c
-    qemu/hw/arm/virt.c
-    qemu/ioport.c
-    qemu/memory.c
-    qemu/memory_mapping.c
-    qemu/target-arm/cpu.c
-    qemu/target-arm/crypto_helper.c
-    qemu/target-arm/helper.c
-    qemu/target-arm/iwmmxt_helper.c
-    qemu/target-arm/neon_helper.c
-    qemu/target-arm/op_helper.c
-    qemu/target-arm/psci.c
-    qemu/target-arm/translate.c
-    qemu/target-arm/unicorn_arm.c
-    qemu/tcg/optimize.c
-    qemu/tcg/tcg.c
-    qemu/translate-all.c
-)
-
-if(MSVC)
-    target_compile_options(armeb-softmmu PRIVATE
-        -DNEED_CPU_H
-        /FIarmeb.h
-        /I${CMAKE_CURRENT_SOURCE_DIR}/msvc/unicorn/armeb-softmmu
-        /I${CMAKE_CURRENT_SOURCE_DIR}/qemu/target-arm
-    )
-else()
-    target_compile_options(armeb-softmmu PRIVATE
-        -DNEED_CPU_H
-        -include armeb.h
-        -I${CMAKE_BINARY_DIR}/armeb-softmmu
-        -I${CMAKE_CURRENT_SOURCE_DIR}/qemu/target-arm
-    )
-endif()
+#add_library(armeb-softmmu OBJECT
+#    qemu/cpu-exec.c
+#    qemu/cpus.c
+#    qemu/cputlb.c
+#    qemu/exec.c
+#    qemu/fpu/softfloat.c
+#    qemu/hw/arm/tosa.c
+#    qemu/hw/arm/virt.c
+#    qemu/ioport.c
+#    qemu/memory.c
+#    qemu/memory_mapping.c
+#    qemu/target-arm/cpu.c
+#    qemu/target-arm/crypto_helper.c
+#    qemu/target-arm/helper.c
+#    qemu/target-arm/iwmmxt_helper.c
+#    qemu/target-arm/neon_helper.c
+#    qemu/target-arm/op_helper.c
+#    qemu/target-arm/psci.c
+#    qemu/target-arm/translate.c
+#    qemu/target-arm/unicorn_arm.c
+#    qemu/tcg/optimize.c
+#    qemu/tcg/tcg.c
+#    qemu/translate-all.c
+#)
+#
+#if(MSVC)
+#    target_compile_options(armeb-softmmu PRIVATE
+#        -DNEED_CPU_H
+#        /FIarmeb.h
+#        /I${CMAKE_CURRENT_SOURCE_DIR}/msvc/unicorn/armeb-softmmu
+#        /I${CMAKE_CURRENT_SOURCE_DIR}/qemu/target-arm
+#    )
+#else()
+#    target_compile_options(armeb-softmmu PRIVATE
+#        -DNEED_CPU_H
+#        -include armeb.h
+#        -I${CMAKE_BINARY_DIR}/armeb-softmmu
+#        -I${CMAKE_CURRENT_SOURCE_DIR}/qemu/target-arm
+#    )
+#endif()
 endif()
 
 if (UNICORN_HAS_AARCH64)
@@ -517,6 +519,7 @@ add_library(m68k-softmmu OBJECT
     qemu/target-m68k/unicorn.c
     qemu/tcg/optimize.c
     qemu/tcg/tcg.c
+    qemu/tci.c
     qemu/translate-all.c
 )
 
@@ -560,6 +563,7 @@ add_library(mips-softmmu OBJECT
     qemu/target-mips/unicorn.c
     qemu/tcg/optimize.c
     qemu/tcg/tcg.c
+    qemu/tci.c
     qemu/translate-all.c
 )
 
@@ -601,6 +605,7 @@ add_library(mipsel-softmmu OBJECT
     qemu/target-mips/unicorn.c
     qemu/tcg/optimize.c
     qemu/tcg/tcg.c
+    qemu/tci.c
     qemu/translate-all.c
 )
 
@@ -642,6 +647,7 @@ add_library(mips64-softmmu OBJECT
     qemu/target-mips/unicorn.c
     qemu/tcg/optimize.c
     qemu/tcg/tcg.c
+    qemu/tci.c
     qemu/translate-all.c
 )
 
@@ -683,6 +689,7 @@ add_library(mips64el-softmmu OBJECT
     qemu/target-mips/unicorn.c
     qemu/tcg/optimize.c
     qemu/tcg/tcg.c
+    qemu/tci.c
     qemu/translate-all.c
 )
 
@@ -726,6 +733,7 @@ add_library(sparc-softmmu OBJECT
     qemu/target-sparc/win_helper.c
     qemu/tcg/optimize.c
     qemu/tcg/tcg.c
+    qemu/tci.c
     qemu/translate-all.c
 )
 
@@ -768,6 +776,7 @@ add_library(sparc64-softmmu OBJECT
     qemu/target-sparc/win_helper.c
     qemu/tcg/optimize.c
     qemu/tcg/tcg.c
+    qemu/tci.c
     qemu/translate-all.c
 )
 
@@ -864,9 +873,9 @@ if (UNICORN_HAS_X86)
     list(APPEND UNICORN_SAMPLE_FILE sample_x86 sample_x86_32_gdt_and_seg_regs sample_batch_reg mem_apis shellcode)
 endif()
 if (UNICORN_HAS_ARM)
-    list(APPEND UNICORN_COMPILE_OPTIONS -DUNICORN_HAS_ARM -DUNICORN_HAS_ARMEB)
-    list(APPEND UNICORN_OBJECT_LIBRARIES arm-softmmu armeb-softmmu)
-    list(APPEND UNICORN_SAMPLE_FILE sample_arm sample_armeb)
+    list(APPEND UNICORN_COMPILE_OPTIONS -DUNICORN_HAS_ARM)
+    list(APPEND UNICORN_OBJECT_LIBRARIES arm-softmmu)
+    list(APPEND UNICORN_SAMPLE_FILE sample_arm)
 endif()
 if (UNICORN_HAS_AARCH64)
     list(APPEND UNICORN_COMPILE_OPTIONS -DUNICORN_HAS_ARM64)
