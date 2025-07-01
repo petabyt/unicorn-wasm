@@ -569,6 +569,10 @@ static void clear_deleted_hooks(uc_engine *uc)
     list_clear(&uc->hooks_to_del);
 }
 
+UNICORN_EXPORT int uc_hit_execution_limit(uc_engine* uc) {
+    return uc->emu_counter > uc->emu_count;
+}
+
 UNICORN_EXPORT
 uc_err uc_emu_start(uc_engine* uc, uint64_t begin, uint64_t until, uint64_t timeout, size_t count)
 {
