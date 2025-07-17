@@ -14,7 +14,7 @@
 #   $ make
 # By Huitao Chen, 2019
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.10)
 project(unicorn C)
 
 set(UNICORN_VERSION_MAJOR 1)
