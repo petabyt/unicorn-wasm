@@ -32,6 +32,9 @@ typedef size_t uc_hook;
 #include "arm64.h"
 #include "mips.h"
 #include "sparc.h"
+#include "riscv.h"
+#include "avr.h"
+#include "ppc.h"
 
 #ifdef __GNUC__
 #define DEFAULT_VISIBILITY __attribute__((visibility("default")))
@@ -88,13 +91,18 @@ typedef size_t uc_hook;
 
 // Architecture type
 typedef enum uc_arch {
-    UC_ARCH_ARM = 1,    // ARM architecture (including Thumb, Thumb-2)
-    UC_ARCH_ARM64,      // ARM-64, also called AArch64
-    UC_ARCH_MIPS,       // Mips architecture
-    UC_ARCH_X86,        // X86 architecture (including x86 & x86-64)
-    UC_ARCH_PPC,        // PowerPC architecture (currently unsupported)
-    UC_ARCH_SPARC,      // Sparc architecture
-    UC_ARCH_M68K,       // M68K architecture
+    UC_ARCH_ARM = 1, // ARM architecture (including Thumb, Thumb-2)
+    UC_ARCH_ARM64,   // ARM-64, also called AArch64
+    UC_ARCH_MIPS,    // Mips architecture
+    UC_ARCH_X86,     // X86 architecture (including x86 & x86-64)
+    UC_ARCH_PPC,     // PowerPC architecture
+    UC_ARCH_SPARC,   // Sparc architecture
+    UC_ARCH_M68K,    // M68K architecture
+    UC_ARCH_RISCV,   // RISCV architecture
+    UC_ARCH_S390X,   // S390X architecture
+    UC_ARCH_TRICORE, // TriCore architecture
+    UC_ARCH_AVR,     // AVR architecture
+    UC_ARCH_RH850,   // Renesas RH850 architecture (V850e3v2)
     UC_ARCH_MAX,
 } uc_arch;
 
@@ -104,40 +112,49 @@ typedef enum uc_mode {
     UC_MODE_BIG_ENDIAN = 1 << 30, // big-endian mode
 
     // arm / arm64
-    UC_MODE_ARM = 0,              // ARM mode
-    UC_MODE_THUMB = 1 << 4,       // THUMB mode (including Thumb-2)
-    UC_MODE_MCLASS = 1 << 5,      // ARM's Cortex-M series (currently unsupported)
-    UC_MODE_V8 = 1 << 6,          // ARMv8 A32 encodings for ARM (currently unsupported)
+    UC_MODE_ARM = 0,        // ARM mode
+    UC_MODE_THUMB = 1 << 4, // THUMB mode (including Thumb-2)
+    // Depreciated, use UC_ARM_CPU_* with uc_ctl instead.
+    UC_MODE_MCLASS = 1 << 5,  // ARM's Cortex-M series.
+    UC_MODE_V8 = 1 << 6,      // ARMv8 A32 encodings for ARM
+    UC_MODE_ARMBE8 = 1 << 10, // Big-endian data and Little-endian code.
+                              // Legacy support for UC1 only.
 
     // arm (32bit) cpu types
-    UC_MODE_ARM926 = 1 << 7,	  // ARM926 CPU type
-    UC_MODE_ARM946 = 1 << 8,	  // ARM946 CPU type
-    UC_MODE_ARM1176 = 1 << 9,	  // ARM1176 CPU type
-
-    // ARM BE8
-    UC_MODE_ARMBE8 = 1 << 10,     // Big-endian data and Little-endian code
+    // Depreciated, use UC_ARM_CPU_* with uc_ctl instead.
+    UC_MODE_ARM926 = 1 << 7,  // ARM926 CPU type
+    UC_MODE_ARM946 = 1 << 8,  // ARM946 CPU type
+    UC_MODE_ARM1176 = 1 << 9, // ARM1176 CPU type
 
     // mips
-    UC_MODE_MICRO = 1 << 4,       // MicroMips mode (currently unsupported)
-    UC_MODE_MIPS3 = 1 << 5,       // Mips III ISA (currently unsupported)
-    UC_MODE_MIPS32R6 = 1 << 6,    // Mips32r6 ISA (currently unsupported)
-    UC_MODE_MIPS32 = 1 << 2,      // Mips32 ISA
-    UC_MODE_MIPS64 = 1 << 3,      // Mips64 ISA
+    UC_MODE_MICRO = 1 << 4,    // MicroMips mode (currently unsupported)
+    UC_MODE_MIPS3 = 1 << 5,    // Mips III ISA (currently unsupported)
+    UC_MODE_MIPS32R6 = 1 << 6, // Mips32r6 ISA (currently unsupported)
+    UC_MODE_MIPS32 = 1 << 2,   // Mips32 ISA
+    UC_MODE_MIPS64 = 1 << 3,   // Mips64 ISA
 
     // x86 / x64
-    UC_MODE_16 = 1 << 1,          // 16-bit mode
-    UC_MODE_32 = 1 << 2,          // 32-bit mode
-    UC_MODE_64 = 1 << 3,          // 64-bit mode
+    UC_MODE_16 = 1 << 1, // 16-bit mode
+    UC_MODE_32 = 1 << 2, // 32-bit mode
+    UC_MODE_64 = 1 << 3, // 64-bit mode
 
-    // ppc 
-    UC_MODE_PPC32 = 1 << 2,       // 32-bit mode (currently unsupported)
-    UC_MODE_PPC64 = 1 << 3,       // 64-bit mode (currently unsupported)
-    UC_MODE_QPX = 1 << 4,         // Quad Processing eXtensions mode (currently unsupported)
+    // ppc
+    UC_MODE_PPC32 = 1 << 2, // 32-bit mode
+    UC_MODE_PPC64 = 1 << 3, // 64-bit mode (currently unsupported)
+    UC_MODE_QPX =
+        1 << 4, // Quad Processing eXtensions mode (currently unsupported)
 
     // sparc
-    UC_MODE_SPARC32 = 1 << 2,     // 32-bit mode
-    UC_MODE_SPARC64 = 1 << 3,     // 64-bit mode
-    UC_MODE_V9 = 1 << 4,          // SparcV9 mode (currently unsupported)
+    UC_MODE_SPARC32 = 1 << 2, // 32-bit mode
+    UC_MODE_SPARC64 = 1 << 3, // 64-bit mode
+    UC_MODE_V9 = 1 << 4,      // SparcV9 mode (currently unsupported)
+
+    // rh850
+    UC_MODE_RH850 = 1 << 2, // 32-bit mode
+
+    // riscv
+    UC_MODE_RISCV32 = 1 << 2, // 32-bit mode
+    UC_MODE_RISCV64 = 1 << 3, // 64-bit mode
 
     // m68k
 } uc_mode;
